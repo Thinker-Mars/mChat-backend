@@ -1,0 +1,5 @@
+# Editor directories and files
+.vscode
+
+# 忽略各服务下的node模块
+*/node_modules
