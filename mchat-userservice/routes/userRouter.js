@@ -1,7 +1,7 @@
 // 用户服务
 var express = require('express');
 var router = express.Router();
-var connection = require("../utils/mysqlConnection");
+var {execute} = require("../utils/mysqlUtil");
 
 /**
  * 根据uid与pwd获取用户信息
@@ -9,13 +9,11 @@ var connection = require("../utils/mysqlConnection");
 router.post("/findUser", (req, res, next) => {
 	const {uid, pwd} = req.body;
 	var sql = `SELECT * FROM user_info as uInfo where uInfo.UID = ${uid} AND uInfo.Pwd = ${pwd}`;
-	connection.query(sql, (err, results, fields) => {
-		if (err) {
-			res.json(err);
-		} else {
-			res.json(results);
-		}
-	})
+	execute(sql).then(resp => {
+		res.json(resp);
+	}, error => {
+		res.json(error);
+	});
 });
 
 /**
@@ -25,12 +23,10 @@ router.post("/register", (req, res, next) => {
 	// 注册暂时先这样处理
 	const {uid, nickName, pwd} = req.body;
 	var sql = `INSERT INTO user_info(UID, NickName, Pwd) VALUES(?, ?, ?)`;
-	connection.query(sql, [uid, nickName, pwd], (err, results, fields) => {
-		if (err) {
-			res.json(err);
-		} else {
-			res.send("register success");
-		}
+	execute(sql, [uid, nickName, pwd]).then(resp => {
+		res.json(resp);
+	}, error => {
+		res.json(error);
 	})
 })
 
