@@ -1,5 +1,5 @@
 ## <center>**mChat用户服务**</center>
-***
+
 * <a href="#职能">职能</a>
 * <a href="#接口">接口</a>
 ## <a name="职能">职能</a>
