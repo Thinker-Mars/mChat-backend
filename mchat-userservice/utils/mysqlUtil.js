@@ -49,13 +49,13 @@ function execute(sql, param) {
 	return new Promise((resolve, reject) => {
 		pool.getConnection((err, connection) => {
 			if (err) {
-				reject(Response.error(err));
+				reject(err);
 			} else {
 				connection.query(sql, param, (error, results, fields) => {
 					if (error) {
-						reject(Response.error(error));
+						reject(error);
 					} else {
-						resolve(Response.success("", results));
+						resolve(results);
 					}
 				})
 			}
