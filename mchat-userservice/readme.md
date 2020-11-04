@@ -11,7 +11,6 @@
 	|路由|/user/register|POST|
 	|相关参数|uid: 用户唯一ID, nickName: 用户昵称, pwd: 登录密码|目前先这样处理，后续或有修改|
 	|响应|{code: 10000, msg: "", data: ""}|
-	|||
 	<br>
 * 获取用户信息
   |内容|说明|备注|
@@ -19,4 +18,3 @@
 	|路由|/user/findUser|POST|
 	|相关参数|uid: 用户唯一ID, pwd: 用户登录密码|
 	|响应|{code: 10000, msg: "", data: {userInfo/Object}}|
-	|||
