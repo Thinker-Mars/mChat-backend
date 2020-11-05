@@ -1,4 +1,4 @@
-var {RES_CODE} = require("../constants/code-constant");
+let {RES_CODE} = require("../constants/code-constant");
 
 /**
  * 响应类

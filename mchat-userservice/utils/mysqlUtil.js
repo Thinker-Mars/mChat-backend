@@ -2,17 +2,17 @@
  * mysql工具
  */
 
-var mysql = require("mysql");
+let mysql = require("mysql");
 
 /**
  * 系统统一响应类
  */
-var Response = require("./response");
+let Response = require("./response");
 
 /**
  * 构造连接池配置对象
  */
-var poolConfig = {
+let poolConfig = {
 	host: "127.0.0.1",
 	user: "root",
 	password: "yingziairen",
@@ -38,7 +38,7 @@ var poolConfig = {
 /**
  * 创建连接池
  */
-var pool = mysql.createPool(poolConfig);
+let pool = mysql.createPool(poolConfig);
 
 /**
  * 执行sql

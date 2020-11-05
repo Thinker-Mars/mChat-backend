@@ -1,9 +1,9 @@
-var createError = require('http-errors');
-var express = require('express');
-var logger = require('morgan');
-var userRouter = require("./routes/userRouter");
+let createError = require('http-errors');
+let express = require('express');
+let logger = require('morgan');
+let userRouter = require("./routes/userRouter");
 
-var app = express();
+let app = express();
 
 app.use(logger("dev")); // logger
 app.use(express.json()); // parsing application/json

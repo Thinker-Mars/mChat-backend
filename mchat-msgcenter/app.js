@@ -1,10 +1,10 @@
-var createError = require('http-errors');
-var express = require('express');
-var logger = require('morgan');
+let createError = require('http-errors');
+let express = require('express');
+let logger = require('morgan');
 
-var msgRouter = require("./routes/msgRouter");
+let msgRouter = require("./routes/msgRouter");
 
-var app = express();
+let app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
