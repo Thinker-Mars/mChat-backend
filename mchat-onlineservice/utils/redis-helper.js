@@ -1,10 +1,24 @@
 let redis = require("redis");
-let options = require("../constants/redisConfig");
+let {onlineOptions, socketID2UIDOptions} = require("../constants/redisConfig");
 
-let redisClient = redis.createClient(options);
+/**
+ * 操作 [在线用户] 数据库
+ */
+let onlineClient = redis.createClient(onlineOptions);
 
-redisClient.on("error", (error) => {
+/**
+ * 操作 [socketID-UID关系] 数据库
+ */
+let uidRelationClient = redis.createClient(socketID2UIDOptions);
+
+
+onlineClient.on("error", (error) => {
 	console.log(error);
 })
 
-module.exports = redisClient
+uidRelationClient.on("error", (error) => {
+	console.log(error);
+})
+
+module.exports.onlineClient = onlineClient;
+module.exports.uidRelationClient = uidRelationClient;

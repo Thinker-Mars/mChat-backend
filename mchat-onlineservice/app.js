@@ -3,7 +3,6 @@ let express = require('express');
 let logger = require('morgan');
 
 let socketRouter = require("./routes/socket");
-
 let app = express();
 
 app.use(logger('dev'));
