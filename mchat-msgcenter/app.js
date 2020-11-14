@@ -10,7 +10,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("msgCenter", msgRouter);
+app.use("/msgCenter", msgRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
