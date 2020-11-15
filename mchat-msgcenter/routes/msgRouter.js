@@ -26,8 +26,8 @@ router.post("/deleteQueue", (req, res, next) => {
 router.get("/getMsg", (req, res, next) => {
   let {queue} = req.query;
   getMsg(queue).then(
-    () => {
-      res.send("ok");
+    msg => {
+      res.json(msg);
     }
   )
 })

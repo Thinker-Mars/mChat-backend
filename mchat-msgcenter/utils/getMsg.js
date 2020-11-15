@@ -5,36 +5,33 @@ function getMsg(queue) {
     return new Promise((resolve, reject) => {
         amqp.connect(option).then(
             conn => {
-                conn.createChannel().then(
-                    channel => {
-                        let pullMsg = [];
-                        function pull(queue) {
-                            channel.get(queue, {noAck: true}).then(
-                                msg => {
-                                    if (msg.content) {
-                                        console.log(msg.content.toString());
-                                    } else {
-                                        console.log("暂无消息");
-                                    }
-                                }
-                            )
-                        }
-                        if (pull()) {
-                            resolve(pullMsg);
-                        }
-                        // channel.get(queue, {noAck: true}).then(
-                        //     msg => {
-                        //         if (msg.content) {
-                        //             console.log(msg.content.toString());
-                        //             getMsg(queue);
-                        //         } else {
-                        //             console.log("暂无消息");
-                        //             resolve();
-                        //         }
-                        //     }
-                        // )
+							return conn.createChannel().then(
+									async channel => {
+												let pullMsg = [];
+												async function pull(queue) {
+													let msg = await channel.get(queue, {noAck: true});
+													if (msg.content) {
+														return msg.content.toString();
+													} else {
+														return "";
+													}
+												}
+												while (true) {
+													let res = await pull(queue);
+													if (res) {
+														pullMsg.push(res)
+													} else {
+														break;
+													}
+												}
+												resolve(pullMsg);
+												return channel.close();
                     }
-                )
+                ).finally(
+									() => {
+										conn.close();
+									}
+								)
             }
         )
     })
