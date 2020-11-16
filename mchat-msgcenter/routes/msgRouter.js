@@ -1,35 +1,40 @@
 let express = require('express');
 let router = express.Router();
-let send = require("../utils/send");
-let deleteQueue = require("../utils/delete");
-let getMsg = require("../utils/getMsg");
 
+/**
+ * MQ工具类
+ */
+let MQ = require("../utils/mq");
 
-router.post('/send', (req, res, next) => {
-  let {msg} = req.body;
-  send(msg).then(
-    () => {
-      res.send("ok");
-    }
-  )
+/**
+ * 系统统一响应类
+ */
+let Response = require("../utils/response");
+
+/**
+ * 向 [消息中心] 发送消息
+ */
+router.post('/sendMsg', (req, res, next) => {
+	let {queue, msg} = req.body;
+	let mq = new MQ();
+	mq.sendMsg(queue, msg).then(
+		() => {
+			res.json(Response.success());
+		}
+	)
 });
 
-router.post("/deleteQueue", (req, res, next) => {
-  let {queue} = req.body;
-  deleteQueue(queue).then(
-    () => {
-      res.send("ok");
-    }
-  )
-});
-
+/**
+ * 从 [消息中心] 获取消息
+ */
 router.get("/getMsg", (req, res, next) => {
-  let {queue} = req.query;
-  getMsg(queue).then(
-    msg => {
-      res.json(msg);
-    }
-  )
+	let {queue} = req.query;
+	let mq = new MQ();
+	mq.pullMsg(queue).then(
+		msg => {
+			res.json(Response.success("", msg));
+		}
+	)
 })
 
 module.exports = router;
