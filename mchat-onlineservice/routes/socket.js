@@ -1,6 +1,7 @@
 let express = require("express");
 let router = express.Router();
 let {login, logout, isUserOnline} = require("../utils/commonFun");
+let Request = require("../utils/request");
 
 router.io = function(io) {
 
@@ -17,8 +18,18 @@ router.io = function(io) {
 				if (online) {
 					io.to(tid).emit("receiveUserMsg", {tid: uid, msg});
 				} else {
-					// 当前不在线，消息发送至 [消息中心]
-					console.log("用户不在线，消息将发送至 [消息中心]");
+					let data = {
+						queue: `${tid}-queue`,
+						msg
+					}
+					Request.post("/msgCenter/sendMsg", data).then(
+						() => {
+							console.log("用户不在线，消息已发送至 [消息中心]");
+						},
+						err => {
+							console.log(err);
+						}
+					);
 				}
 			})
 		});
