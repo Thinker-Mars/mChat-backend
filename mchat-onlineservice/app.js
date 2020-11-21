@@ -2,7 +2,7 @@ let createError = require('http-errors');
 let express = require('express');
 let logger = require('morgan');
 
-let socketRouter = require("./routes/socket");
+let socketRouter = require("./routes/socketRouter");
 let app = express();
 
 app.use(logger('dev'));

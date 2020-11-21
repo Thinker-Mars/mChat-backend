@@ -1,5 +1,5 @@
 let redis = require("redis");
-let {onlineOptions, socketID2UIDOptions} = require("../constants/redisConfig");
+let {onlineOptions, socketID2UIDOptions} = require("../config/redisConfig");
 
 /**
  * 操作 [在线用户] 数据库

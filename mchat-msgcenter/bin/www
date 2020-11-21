@@ -7,12 +7,14 @@
 let app = require('../app');
 let debug = require('debug')('mchat-msgservice:server');
 let http = require('http');
+let { registerService } = require("../utils/commonFun");
 
 /**
  * Get port from environment and store in Express.
  */
-
-let port = normalizePort(process.env.PORT || '2000');
+let { SERVICE_PORT } = require("../config/serviceConfig");
+let port = SERVICE_PORT;
+// let port = normalizePort(process.env.PORT || '2000');
 app.set('port', port);
 
 /**
@@ -28,6 +30,11 @@ let server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+/**
+ * register service
+ */
+registerService();
 
 /**
  * Normalize a port into a number, string, or false.

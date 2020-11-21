@@ -6,6 +6,7 @@ let {RES_CODE} = require("../constants/code-constant");
  * 可通过 Response.success()调用
  */
 class Response {
+	
 	constructor() {}
 
 	static success(msg = "", data = "") {
