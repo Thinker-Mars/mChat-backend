@@ -1,4 +1,4 @@
-let option = {
+const option = {
     hostname: "47.244.232.190",
     port: 5672,
     username: "admin",

@@ -1,4 +1,4 @@
-let {onlineClient, uidRelationClient} = require("./redis-helper");
+const {onlineClient, uidRelationClient} = require("./redis-helper");
 
 /**
  * 用户登录，信息存入redis

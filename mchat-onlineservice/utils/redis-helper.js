@@ -1,15 +1,15 @@
-let redis = require("redis");
-let {onlineOptions, socketID2UIDOptions} = require("../config/redisConfig");
+const redis = require("redis");
+const {onlineOptions, socketID2UIDOptions} = require("../config/redisConfig");
 
 /**
  * 操作 [在线用户] 数据库
  */
-let onlineClient = redis.createClient(onlineOptions);
+const onlineClient = redis.createClient(onlineOptions);
 
 /**
  * 操作 [socketID-UID关系] 数据库
  */
-let uidRelationClient = redis.createClient(socketID2UIDOptions);
+const uidRelationClient = redis.createClient(socketID2UIDOptions);
 
 
 onlineClient.on("error", (error) => {

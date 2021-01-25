@@ -1,15 +1,15 @@
-let express = require('express');
-let router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 /**
  * MQ工具类
  */
-let MQ = require("../utils/mq");
+const MQ = require("../utils/mq");
 
 /**
  * 系统统一响应类
  */
-let Response = require("../utils/response");
+const Response = require("../utils/response");
 
 /**
  * 向 [消息中心] 发送消息

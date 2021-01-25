@@ -1,5 +1,5 @@
 const axios = require("axios");
-const axiosConfig = require("../config/requestConfig");
+const axiosConfig = require("../config/axiosConfig");
 
 class Request {
 

@@ -1,8 +1,8 @@
-let createError = require('http-errors');
-let express = require('express');
-let logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const logger = require('morgan');
 
-let msgRouter = require("./routes/msgRouter");
+const msgRouter = require("./routes/msgRouter");
 
 let app = express();
 

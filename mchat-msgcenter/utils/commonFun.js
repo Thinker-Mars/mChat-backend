@@ -1,7 +1,7 @@
-let os = require("os");
-let moment = require("moment");
-let Request = require("./request");
-let { SERVICE_ID, SERVICE_BASE_URL, SERVICE_PORT } = require("../config/serviceConfig");
+const os = require("os");
+const moment = require("moment");
+const Request = require("./request");
+const { SERVICE_ID, SERVICE_BASE_URL, SERVICE_PORT } = require("../config/serviceConfig");
 
 /**
  * 获取IP
@@ -34,13 +34,13 @@ function getService(id) {
 function registerService() {
 
     // 生成此服务的地址：ip:port
-    let addr = getIP() + ":" + SERVICE_PORT;
+    const addr = getIP() + ":" + SERVICE_PORT;
 
     // 生成向网关发起请求的url
-    let url = SERVICE_BASE_URL + SERVICE_ID;
+    const url = SERVICE_BASE_URL + SERVICE_ID;
 
     // 生成当前时间
-    let time = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
+    const time = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
 
     // 先判断是否已有相关服务存在
     getService(SERVICE_ID).then(
