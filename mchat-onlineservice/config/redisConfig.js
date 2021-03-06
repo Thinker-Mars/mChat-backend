@@ -5,7 +5,8 @@
 const onlineOptions = {
 	host: "127.0.0.1",
 	port: 6379,
-	db: 0
+	db: 0,
+	// password: "mchat666"
 }
 
 /**
@@ -15,7 +16,8 @@ const onlineOptions = {
 const socketID2UIDOptions = {
 	host: "127.0.0.1",
 	port: 6379,
-	db: 1
+	db: 1,
+	// password: "mchat666"
 }
 
 module.exports.onlineOptions = onlineOptions;
