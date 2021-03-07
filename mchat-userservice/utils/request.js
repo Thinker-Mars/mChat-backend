@@ -1,8 +1,7 @@
-const axios = require("axios");
-const requestConfig = require("../config/requestConfig");
+const axios = require('axios');
+const requestConfig = require('../config/requestConfig');
 
 class Request {
-
 	constructor() {
 		this.axios = axios.create(requestConfig);
 	}
@@ -16,11 +15,9 @@ class Request {
 				err => {
 					reject(err);
 				}
-			)
-		})
+			);
+		});
 	}
-
-
 }
 
 module.exports = new Request();

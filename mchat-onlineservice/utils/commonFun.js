@@ -1,4 +1,4 @@
-const {onlineClient, uidRelationClient} = require("./redis-helper");
+const { onlineClient, uidRelationClient } = require('./redis-helper');
 
 /**
  * 用户登录，信息存入redis
@@ -14,7 +14,7 @@ function login(socketId, uid) {
 		} else {
 			reject(false);
 		}
-	})
+	});
 }
 
 /**
@@ -34,7 +34,7 @@ function logout(socketId) {
 		} else {
 			resolve(true);
 		}
-	})
+	});
 }
 
 /**
@@ -51,8 +51,8 @@ function isUserOnline(uid) {
 					resolve(false);
 				}
 			}
-		})
-	})
+		});
+	});
 }
 
 module.exports.login = login;

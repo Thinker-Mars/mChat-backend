@@ -1,8 +1,7 @@
-const axios = require("axios");
-const axiosConfig = require("../config/axiosConfig");
+const axios = require('axios');
+const axiosConfig = require('../config/axiosConfig');
 
 class Request {
-
 	constructor() {
 		this.axios = axios.create(axiosConfig);
 		this.initAxios();
@@ -26,7 +25,7 @@ class Request {
 			error => {
 				return Promise.reject(error.response.data);
 			}
-		)
+		);
 	}
 
 	post(url, data) {
@@ -38,8 +37,8 @@ class Request {
 				err => {
 					reject(err);
 				}
-			)
-		})
+			);
+		});
 	}
 
 	put(url, data) {
@@ -51,8 +50,8 @@ class Request {
 				err => {
 					reject(err);
 				}
-			)
-		}) 
+			);
+		});
 	}
 
 	get(url) {
@@ -64,8 +63,8 @@ class Request {
 				err => {
 					reject(err);
 				}
-			)
-		}) 
+			);
+		});
 	}
 
 	patch(url, data) {
@@ -77,11 +76,9 @@ class Request {
 				err => {
 					reject(err);
 				}
-			)
-		}) 
+			);
+		});
 	}
-
-
 }
 
 module.exports = new Request();

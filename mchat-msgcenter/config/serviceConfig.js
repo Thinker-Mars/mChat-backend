@@ -6,7 +6,7 @@ const SERVICE_ID = 3;
 /**
  * 设置服务信息时的基础url
  */
-const SERVICE_BASE_URL = "apisix/admin/upstreams/";
+const SERVICE_BASE_URL = 'apisix/admin/upstreams/';
 
 /**
  * 此服务启动端口
