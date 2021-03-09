@@ -12,14 +12,14 @@ router.io = function(io) {
 			/**
 			 * 先判断消息的目标用户是否在线、在线则发送，不在线则将消息发送至 [消息中心] ，由其处理
 			 */
-			const { tid, msg, uid } = data;
-			isUserOnline(tid).then(online => {
+			const { ProducerID, ConsumerID, Msg, Timestamp } = data;
+			isUserOnline(ConsumerID).then(online => {
 				if (online) {
-					io.to(tid).emit('receiveUserMsg', { tid: uid, msg });
+					io.to(ConsumerID).emit('receiveUserMsg', { ProducerID, Msg, Timestamp });
 				} else {
 					const data = {
-						queue: `${tid}-queue`,
-						msg
+						queue: `${ConsumerID}-queue`,
+						msg: Msg
 					};
 					Request.post('/msgCenter/sendMsg', data).then(
 						() => {
