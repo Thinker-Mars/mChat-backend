@@ -8,6 +8,22 @@ const { execute } = require('../utils/mysqlUtil');
 const Response = require('../utils/response');
 
 /**
+ * 用户登录
+ */
+router.post('/login', (req, res, next) => {
+	const { uid, password } = req.body;
+	const sql = `SELECT * FROM userinfo WHERE userinfo.Uid = ${uid} AND userinfo.Password = '${password}'`;
+	execute(sql).then((resp) => {
+		const length = Object.keys(resp).length;
+		if (length === 1) {
+			res.json(Response.success());
+		} else {
+			res.json(Response.error('账号密码错误'));
+		}
+	})
+})
+
+/**
  * 根据uid与pwd获取用户信息
  */
 router.post('/findUser', (req, res, next) => {

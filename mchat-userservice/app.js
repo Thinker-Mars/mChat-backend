@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: false })); // parsing application/x-www-f
 /**
  * 用户服务
  */
-app.use('/user', userRouter);
+app.use('/usercenter', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

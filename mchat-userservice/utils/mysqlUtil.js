@@ -13,9 +13,10 @@ const mysql = require('mysql');
  * 构造连接池配置对象
  */
 const poolConfig = {
-	host: '127.0.0.1',
+	host: '47.92.70.250',
+	port: 3306,
 	user: 'root',
-	password: 'yingziairen',
+	password: 'yingziairen1a2Z',
 	database: 'mchat',
 	/**
 	 * 最大连接数，默认10
@@ -32,7 +33,7 @@ const poolConfig = {
 	/**
 	 * 连接超时时间，默认10s
 	 */
-	acquireTimeout: 60
+	acquireTimeout: 10 * 1000
 };
 
 /**
@@ -54,12 +55,13 @@ function execute(sql, param) {
 				connection.query(sql, param, (error, results, fields) => {
 					if (error) {
 						reject(error);
+						connection.release();
 					} else {
 						resolve(results);
+						connection.release();
 					}
 				});
 			}
-			connection.release();
 		});
 	});
 }

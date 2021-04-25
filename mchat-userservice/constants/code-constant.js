@@ -1,6 +1,6 @@
-const RES_CODE = {
-	SUCCESS: 10000,
-	ERROR: 0
+const RequestCode = {
+	Success: 1,
+	Error: 0
 };
 
-module.exports.RES_CODE = RES_CODE;
+module.exports.RequestCode = RequestCode;
