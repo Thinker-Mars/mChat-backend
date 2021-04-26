@@ -50,10 +50,10 @@ CREATE TABLE `relation`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for user
+-- Table structure for userinfo
 -- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user`  (
+DROP TABLE IF EXISTS `userinfo`;
+CREATE TABLE `userinfo`  (
   `Uid` int(10) NOT NULL COMMENT '用户唯一ID',
   `Password` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户密码',
   `GenderConstant` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '对应constant常量表的ID',

@@ -12,7 +12,7 @@ const Response = require('../utils/response');
  */
 router.post('/login', (req, res, next) => {
 	const { uid, password } = req.body;
-	const sql = `SELECT * FROM userinfo WHERE userinfo.Uid = ${uid} AND userinfo.Password = '${password}'`;
+	const sql = `SELECT * FROM userinfo WHERE Uid = ${uid} AND Password = '${password}'`;
 	execute(sql).then((resp) => {
 		const length = Object.keys(resp).length;
 		if (length === 1) {
@@ -20,15 +20,30 @@ router.post('/login', (req, res, next) => {
 		} else {
 			res.json(Response.error('账号密码错误'));
 		}
-	})
-})
+	});
+});
+
+/**
+ * 查询好友列表
+ */
+router.post('/getFriendList', (req, res, next) => {
+	const { uid } = req.body;
+	const sql = `SELECT Uid, NickName, friendnote.NoteName, constant.Value as Gender, Avatar, Home, Motto FROM userinfo
+		LEFT JOIN constant ON userinfo.GenderConstant = constant.Id
+		LEFT JOIN friendnote ON friendnote.UserId = '${uid}' AND userinfo.Uid = friendnote.FriendId
+		WHERE userinfo.Uid IN 
+	(SELECT FriendId FROM relation WHERE UserId = '${uid}' UNION ALL SELECT UserId FROM relation WHERE FriendId = '${uid}')`;
+	execute(sql).then((resp) => {
+		res.json(Response.success('', { friendList: resp }));
+	});
+});
 
 /**
  * 根据uid与pwd获取用户信息
  */
 router.post('/findUser', (req, res, next) => {
 	const { uid, pwd } = req.body;
-	const sql = `SELECT * FROM user_info as uInfo where uInfo.UID = ${uid} AND uInfo.Pwd = ${pwd}`;
+	const sql = `SELECT * FROM user_info as uInfo where uInfo.UID = '${uid}' AND uInfo.Pwd = ${pwd}`;
 	execute(sql).then(resp => {
 		res.json(Response.success('', resp));
 	}, error => {
