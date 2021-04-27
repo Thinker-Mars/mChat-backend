@@ -12,11 +12,14 @@ const Response = require('../utils/response');
  */
 router.post('/login', (req, res, next) => {
 	const { uid, password } = req.body;
-	const sql = `SELECT * FROM userinfo WHERE Uid = ${uid} AND Password = '${password}'`;
+	const sql = `SELECT userinfo.Uid, constant.Value as Gender, userinfo.BirthDay,
+		userinfo.Avatar, userinfo.Home, userinfo.Motto, userinfo.NickName FROM userinfo
+		LEFT JOIN constant ON userinfo.GenderConstant = constant.Id
+		WHERE Uid = '${uid}' AND Password = '${password}'`;
 	execute(sql).then((resp) => {
 		const length = Object.keys(resp).length;
 		if (length === 1) {
-			res.json(Response.success());
+			res.json(Response.success('', { userinfo: resp[0] }));
 		} else {
 			res.json(Response.error('账号密码错误'));
 		}
