@@ -1,8 +1,8 @@
 const option = {
-	hostname: '47.244.232.190',
+	hostname: '172.20.48.87',
 	port: 5672,
 	username: 'admin',
-	password: 123456
+	password: 'admin'
 };
 
 module.exports = option;

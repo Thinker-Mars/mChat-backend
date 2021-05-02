@@ -1,6 +1,15 @@
-const RES_CODE = {
-	SUCCESS: 10000,
-	ERROR: 0
+/**
+ * 请求的响应code
+ */
+const RequestCode = {
+	/**
+	 * 成功
+	 */
+	Success: 1,
+	/**
+	 * 失败
+	 */
+	Error: 0
 };
 
-module.exports.RES_CODE = RES_CODE;
+module.exports.RequestCode = RequestCode;

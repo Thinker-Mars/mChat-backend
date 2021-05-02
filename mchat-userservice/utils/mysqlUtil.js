@@ -5,18 +5,13 @@
 const mysql = require('mysql');
 
 /**
- * 系统统一响应类
- */
-// const Response = require('./response');
-
-/**
  * 构造连接池配置对象
  */
 const poolConfig = {
-	host: '127.0.0.1',
+	host: '172.20.48.88',
 	port: 3306,
 	user: 'root',
-	password: 'yingziairen',
+	password: 'yingziairen1a2Z',
 	database: 'mchat',
 	/**
 	 * 最大连接数，默认10

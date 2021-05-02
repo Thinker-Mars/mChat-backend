@@ -11,7 +11,7 @@ class MQ {
 	 * @param {*} queue
 	 * @param {*} msg
 	 */
-	sendMsg(queue, msg) {
+	send(queue, msg) {
 		const that = this;
 		return new Promise((resolve, reject) => {
 			that.open.then(
@@ -21,7 +21,6 @@ class MQ {
 							return channel.assertQueue(queue, { durable: false }).then(
 								({ queue, messageCount, consumerCount }) => {
 									channel.sendToQueue(queue, Buffer.from(msg));
-									console.log(`消息已被发送: ${msg}`);
 									resolve();
 									return channel.close();
 								}
@@ -47,7 +46,7 @@ class MQ {
 			that.open.then(
 				(conn) => {
 					return conn.createChannel().then(
-						async channel => {
+						async (channel) => {
 							let pullMsg = [];
 							async function pull(queue) {
 								let msg = await channel.get(queue, {noAck: true});
@@ -57,19 +56,26 @@ class MQ {
 									return '';
 								}
 							}
-							while (true) {
-								let res = await pull(queue);
-								if (res) {
-									pullMsg.push(res)
-								} else {
-									break;
-								}
-							}
-							resolve(pullMsg);
-							return channel.deleteQueue(queue).then(
-								({messageCount}) => {
-									console.log(`队列[${queue}]已被删除，丢失消息数[${messageCount}]`);
-									channel.close();
+							await channel.assertQueue(queue, { durable: false }).then(
+								async () => {
+									while (true) {
+										let res = await pull(queue);
+										if (res) {
+											pullMsg.push(res)
+										} else {
+											break;
+										}
+									}
+									resolve(pullMsg);
+									// return channel.deleteQueue(queue).then(
+									// 	({messageCount}) => {
+									// 		console.log(`队列[${queue}]已被删除，丢失消息数[${messageCount}]`);
+									// 		channel.close();
+									// 	}
+									// )
+								},
+								(err) => {
+									resolve(pullMsg);
 								}
 							)
 						}
@@ -78,6 +84,9 @@ class MQ {
 							conn.close();
 						}
 					);
+				},
+				(err) => {
+					console.log(err);
 				}
 			);
 		});

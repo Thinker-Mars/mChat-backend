@@ -1,4 +1,4 @@
-const { RES_CODE } = require('../constants/code-constant');
+const { RequestCode } = require('../constants/code-constant');
 
 /**
  * 响应类
@@ -8,7 +8,7 @@ const { RES_CODE } = require('../constants/code-constant');
 class Response {
 	static success(msg = '', data = '') {
 		return {
-			code: RES_CODE.SUCCESS,
+			code: RequestCode.Success,
 			msg,
 			data
 		};
@@ -16,7 +16,7 @@ class Response {
 
 	static error(msg = '', data = '') {
 		return {
-			code: RES_CODE.ERROR,
+			code: RequestCode.Error,
 			msg,
 			data
 		};

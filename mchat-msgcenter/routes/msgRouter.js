@@ -14,10 +14,17 @@ const Response = require('../utils/response');
 /**
  * 向 [消息中心] 发送消息
  */
-router.post('/sendMsg', (req, res, next) => {
+router.post('/send', (req, res, next) => {
 	const { queue, msg } = req.body;
+	if (!queue) {
+		res.json(Response.error('invalid queue'));
+	}
+	if (typeof msg !== 'string') {
+		res.json(Response.error('invalid msg'));
+		return;
+	}
 	const mq = new MQ();
-	mq.sendMsg(queue, msg).then(
+	mq.send(queue, msg).then(
 		() => {
 			res.json(Response.success());
 		}
@@ -27,7 +34,7 @@ router.post('/sendMsg', (req, res, next) => {
 /**
  * 从 [消息中心] 获取消息
  */
-router.get('/getMsg', (req, res, next) => {
+router.get('/pull', (req, res, next) => {
 	const { queue } = req.query;
 	const mq = new MQ();
 	mq.pullMsg(queue).then(
