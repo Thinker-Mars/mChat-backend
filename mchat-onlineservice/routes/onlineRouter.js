@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { login, logout, isUserOnline } = require('../utils/commonFun');
-const Request = require('../utils/request');
+// const Request = require('../utils/request');
 
 router.io = function(io) {
 	io.on('connect', function(socket) {
@@ -21,14 +21,14 @@ router.io = function(io) {
 						queue: `${ConsumerID}-queue`,
 						msg: Msg
 					};
-					Request.post('/msgCenter/sendMsg', data).then(
-						() => {
-							console.log('用户不在线，消息已发送至 [消息中心]');
-						},
-						err => {
-							console.log(err);
-						}
-					);
+					// Request.post('/msgCenter/send', data).then(
+					// 	() => {
+					// 		console.log('用户不在线，消息已发送至 [消息中心]');
+					// 	},
+					// 	err => {
+					// 		console.log(err);
+					// 	}
+					// );
 				}
 			});
 		});

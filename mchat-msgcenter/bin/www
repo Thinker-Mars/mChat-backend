@@ -7,6 +7,7 @@ const app = require('../app');
 const debug = require('debug')('mchat-msgservice:server');
 const http = require('http');
 const { registerService } = require('../utils/commonFun');
+const { ServicePort } = require('../config/serviceConfig');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -30,7 +31,6 @@ function normalizePort(val) {
 /**
  * Get port from environment and store in Express.
  */
-const { ServicePort } = require('../config/serviceConfig');
 const port = normalizePort(ServicePort);
 app.set('port', port);
 
