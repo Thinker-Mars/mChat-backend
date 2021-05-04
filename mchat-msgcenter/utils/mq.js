@@ -61,18 +61,17 @@ class MQ {
 									while (true) {
 										let res = await pull(queue);
 										if (res) {
-											pullMsg.push(res)
+											pullMsg.push(JSON.parse(res));
 										} else {
 											break;
 										}
 									}
 									resolve(pullMsg);
-									// return channel.deleteQueue(queue).then(
-									// 	({messageCount}) => {
-									// 		console.log(`队列[${queue}]已被删除，丢失消息数[${messageCount}]`);
-									// 		channel.close();
-									// 	}
-									// )
+									return channel.deleteQueue(queue).then(
+										({messageCount}) => {
+											channel.close();
+										}
+									)
 								},
 								(err) => {
 									resolve(pullMsg);

@@ -19,12 +19,8 @@ router.post('/send', (req, res, next) => {
 	if (!queue) {
 		res.json(Response.error('invalid queue'));
 	}
-	if (typeof msg !== 'string') {
-		res.json(Response.error('invalid msg'));
-		return;
-	}
 	const mq = new MQ();
-	mq.send(queue, msg).then(
+	mq.send(queue, JSON.stringify(msg)).then(
 		() => {
 			res.json(Response.success());
 		}

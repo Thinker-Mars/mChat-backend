@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { login, logout, isUserOnline } = require('../utils/commonFun');
-// const Request = require('../utils/request');
+const Request = require('../utils/request');
 
 router.io = function(io) {
 	io.on('connect', function(socket) {
@@ -19,16 +19,25 @@ router.io = function(io) {
 				} else {
 					const data = {
 						queue: `${ConsumerID}-queue`,
-						msg: Msg
+						msg: {
+							ProducerID,
+							Msg,
+							Timestamp
+						}
 					};
-					// Request.post('/msgCenter/send', data).then(
-					// 	() => {
-					// 		console.log('用户不在线，消息已发送至 [消息中心]');
-					// 	},
-					// 	err => {
-					// 		console.log(err);
-					// 	}
-					// );
+					const config = {
+						headers: {
+							apikey: 'msgcenter'
+						}
+					};
+					Request.post('/msgCenter/send', data, config).then(
+						() => {
+							console.log('用户不在线，消息已发送至 [消息中心]');
+						},
+						err => {
+							console.log(err);
+						}
+					);
 				}
 			});
 		});
