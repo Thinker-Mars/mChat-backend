@@ -28,9 +28,9 @@ class Request {
 		);
 	}
 
-	post(url, data) {
+	post(url, data, config) {
 		return new Promise((resolve, reject) => {
-			this.axios.post(url, data).then(
+			this.axios.post(url, data, config).then(
 				res => {
 					resolve(res);
 				},
@@ -41,9 +41,9 @@ class Request {
 		});
 	}
 
-	put(url, data) {
+	put(url, data, config) {
 		return new Promise((resolve, reject) => {
-			this.axios.put(url, data).then(
+			this.axios.put(url, data, config).then(
 				res => {
 					resolve(res);
 				},
@@ -54,9 +54,9 @@ class Request {
 		});
 	}
 
-	get(url) {
+	get(url, config) {
 		return new Promise((resolve, reject) => {
-			this.axios.get(url).then(
+			this.axios.get(url, config).then(
 				res => {
 					resolve(res);
 				},
@@ -67,9 +67,9 @@ class Request {
 		});
 	}
 
-	patch(url, data) {
+	patch(url, data, config) {
 		return new Promise((resolve, reject) => {
-			this.axios.patch(url, data).then(
+			this.axios.patch(url, data, config).then(
 				res => {
 					resolve(res);
 				},
