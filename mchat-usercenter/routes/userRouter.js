@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { execute } = require('../utils/mysqlUtil');
+const { getObjectUrl, batchGetObjectUrl } = require('../utils/cosHelper');
 /**
  * 系统统一响应类
  */
@@ -19,7 +20,20 @@ router.post('/login', (req, res, next) => {
 	execute(sql).then((resp) => {
 		const length = Object.keys(resp).length;
 		if (length === 1) {
-			res.json(Response.success('', { userinfo: resp[0] }));
+			// 头像标识
+			const { Avatar } = resp[0];
+			// 获取头像地址
+			getObjectUrl(Avatar).then(
+				(url) => {
+					const userinfo = Object.assign(resp[0], { Avatar: url });
+					res.json(Response.success('', { userinfo }));
+				},
+				(err) => {
+					console.log(err);
+					const userinfo = Object.assign(resp[0], { Avatar: '' });
+					res.json(Response.success('', { userinfo }));
+				}
+			);
 		} else {
 			res.json(Response.error('账号密码错误'));
 		}
@@ -37,7 +51,24 @@ router.post('/getFriendList', (req, res, next) => {
 		WHERE userinfo.Uid IN 
 	(SELECT FriendId FROM relation WHERE UserId = '${uid}' UNION ALL SELECT UserId FROM relation WHERE FriendId = '${uid}')`;
 	execute(sql).then((resp) => {
-		res.json(Response.success('', { friendList: resp }));
+		if (Object.keys(resp).length > 0) {
+			const avatars = [];
+			for (const friendInfo of resp) {
+				const { Avatar } = friendInfo;
+				avatars.push(Avatar);
+			}
+			batchGetObjectUrl(avatars).then(
+				(imgRes) => {
+					for (const friendInfo of resp) {
+						const { Avatar } = friendInfo;
+						friendInfo.Avatar = imgRes[Avatar];
+					}
+					res.json(Response.success('', { friendList: resp }));
+				}
+			);
+		} else {
+			res.json(Response.success('', { friendList: [] }));
+		}
 	});
 });
 
