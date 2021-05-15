@@ -1,23 +1,7 @@
-const { Bucket, Region, SecretId, SecretKey } = require('../config/cosConfig');
+const { Bucket, TmpBucket, Region, SecretId, SecretKey, DurationSeconds } = require('../config/cosConfig');
 
 const COS = require('cos-nodejs-sdk-v5');
-
-// /**
-//  * 计算请求签名
-//  * @param {string} method 请求方法，get | post | delete 等
-//  * @param {string} key 对象键（Object 的名称）对象在存储桶中的唯一标识
-//  * @param {number} expires 签名有效时间，默认为900秒
-//  * @returns sign 签名
-//  */
-// function calcAuthorization(method, key, expires = 60) {
-// 	return COS.getAuthorization({
-// 		SecretId: SecretId,
-// 		SecretKey: SecretKey,
-// 		Method: method,
-// 		Key: key,
-// 		Expires: expires
-// 	});
-// }
+const STS = require('qcloud-cos-sts');
 
 /**
  * 获取图片URL
@@ -87,5 +71,56 @@ function batchGetObjectUrl(keys) {
 	});
 }
 
+/**
+ * 获取临时密钥
+ * @param {string} folder 要访问的文件夹
+ */
+function getCredential(folder) {
+	return new Promise((resolve, reject) => {
+		const allowActions = [
+			// 简单上传
+			'name/cos:PutObject',
+			'name/cos:PostObject',
+			// 分片上传
+			'name/cos:InitiateMultipartUpload',
+			'name/cos:ListMultipartUploads',
+			'name/cos:ListParts',
+			'name/cos:UploadPart',
+			'name/cos:CompleteMultipartUpload'
+		];
+		const shortBucketName = TmpBucket.substr(0, TmpBucket.lastIndexOf('-'));
+		const appId = TmpBucket.substr(1 + TmpBucket.lastIndexOf('-'));
+		/**
+		 * 权限列表请看 https://cloud.tencent.com/document/product/436/31923
+		 */
+		const policy = {
+			'version': '2.0',
+			'statement': [{
+				'action': allowActions,
+				'effect': 'allow',
+				'principal': { 'qcs': ['*'] },
+				'resource': [
+					'qcs::cos:' + Region + ':uid/' + appId + ':prefix//' + appId + '/' + shortBucketName + '/' + folder
+				]
+			}]
+		};
+		STS.getCredential(
+			{
+				secretId: SecretId,
+				secretKey: SecretKey,
+				durationSeconds: DurationSeconds,
+				policy: policy
+			},
+			function(err, tempKeys) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(tempKeys);
+				}
+			});
+	});
+}
+
 module.exports.getObjectUrl = getObjectUrl;
 module.exports.batchGetObjectUrl = batchGetObjectUrl;
+module.exports.getCredential = getCredential;

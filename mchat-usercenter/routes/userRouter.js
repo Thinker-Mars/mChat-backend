@@ -2,10 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { execute } = require('../utils/mysqlUtil');
-const { getObjectUrl, batchGetObjectUrl } = require('../utils/cosHelper');
-/**
- * 系统统一响应类
- */
+const { getObjectUrl, batchGetObjectUrl, getCredential } = require('../utils/cosHelper');
 const Response = require('../utils/response');
 
 /**
@@ -70,6 +67,22 @@ router.post('/getFriendList', (req, res, next) => {
 			res.json(Response.success('', { friendList: [] }));
 		}
 	});
+});
+
+/**
+ * 获取访问COS的临时密钥
+ */
+router.get('/getTmpCredential', (req, res, next) => {
+	const { folder } = req.query;
+	getCredential(folder).then(
+		(credential) => {
+			res.json(Response.success('', credential));
+		},
+		(err) => {
+			console.log(err);
+			res.json(Response.error('获取临时密钥失败'));
+		}
+	);
 });
 
 /**

@@ -4,6 +4,11 @@
 const Bucket = 'mchat-1259375888';
 
 /**
+ * 临时桶
+ */
+const TmpBucket = 'mchat-tmp-1259375888';
+
+/**
  * 存储桶所在地域
  */
 const Region = 'ap-nanjing';
@@ -21,12 +26,13 @@ const SecretId = 'AKID1rRKzTXEVXJp84qAmBNKXZN4VSAdlFQM';
 const SecretKey = 'qPlrhGyTjjUjlW2nLddTG4lMgiV1GXZL';
 
 /**
- * 访问COS的域
+ * 临时密钥有效时间
  */
-const CosHost = 'https://mchat-1259375888.cos.ap-nanjing.myqcloud.com';
+const DurationSeconds = 1800;
 
 module.exports.Bucket = Bucket;
+module.exports.TmpBucket = TmpBucket;
 module.exports.Region = Region;
-module.exports.CosHost = CosHost;
 module.exports.SecretId = SecretId;
 module.exports.SecretKey = SecretKey;
+module.exports.DurationSeconds = DurationSeconds;
