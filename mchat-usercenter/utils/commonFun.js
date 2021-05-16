@@ -1,5 +1,6 @@
 const os = require('os');
 const moment = require('moment');
+const { createHash, generateKeyPair, privateDecrypt } = require('crypto');
 const {
 	ServiceID, ServiceConfigAddr, ServicePort, ServiceWeight,
 	ApiKey, ServiceDesc, ConsumerKey, ConsumerConfigAddr
@@ -137,4 +138,72 @@ function registerService() {
 	);
 }
 
+/**
+ * 生成非对称加密用的公钥与私钥
+ */
+function generateKey() {
+	return new Promise((resolve, reject) => {
+		generateKeyPair(
+			'rsa',
+			{
+				modulusLength: 1024,
+				publicKeyEncoding: {
+					type: 'pkcs1',
+					format: 'pem'
+				},
+				privateKeyEncoding: {
+					type: 'pkcs1',
+					format: 'pem'
+				}
+			},
+			(err, publicKey, privateKey) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve({ publicKey, privateKey });
+				}
+			}
+		);
+	});
+}
+
+/**
+ * 盐加密
+ * @param {string} salt 盐
+ * @param {string} content 要加密的内容
+ * @returns 加密后的内容
+ */
+function saltEncrypt(salt, content) {
+	const md5 = createHash('md5');
+	md5.update(salt + content);
+	return md5.digest('base64');
+}
+
+/**
+ * RSA 解密
+ * @param {string} privateKey 私钥
+ * @param {string} data 加密后的数据
+ * @returns 解密的数据
+ */
+function decrypt(privateKey, data) {
+	return privateDecrypt(privateKey, Buffer.from(data, 'base64')).toString();
+}
+
+/**
+ * 生成UUID
+ * @returns UUID
+ */
+function generateUUID() {
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+	}
+	return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+}
+
 module.exports.registerService = registerService;
+module.exports.generateKey = generateKey;
+module.exports.decrypt = decrypt;
+module.exports.generateUUID = generateUUID;
+module.exports.saltEncrypt = saltEncrypt;

@@ -88,8 +88,7 @@ function getCredential(folder) {
 			'name/cos:UploadPart',
 			'name/cos:CompleteMultipartUpload'
 		];
-		const shortBucketName = TmpBucket.substr(0, TmpBucket.lastIndexOf('-'));
-		const appId = TmpBucket.substr(1 + TmpBucket.lastIndexOf('-'));
+		const uid = TmpBucket.substr(1 + TmpBucket.lastIndexOf('-'));
 		/**
 		 * 权限列表请看 https://cloud.tencent.com/document/product/436/31923
 		 */
@@ -100,7 +99,7 @@ function getCredential(folder) {
 				'effect': 'allow',
 				'principal': { 'qcs': ['*'] },
 				'resource': [
-					'qcs::cos:' + Region + ':uid/' + appId + ':prefix//' + appId + '/' + shortBucketName + '/' + folder
+					`qcs::cos:${Region}:uid/${uid}:${TmpBucket}/${folder}/*`
 				]
 			}]
 		};

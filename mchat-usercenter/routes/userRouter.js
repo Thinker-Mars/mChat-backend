@@ -3,7 +3,14 @@ const express = require('express');
 const router = express.Router();
 const { execute } = require('../utils/mysqlUtil');
 const { getObjectUrl, batchGetObjectUrl, getCredential } = require('../utils/cosHelper');
+const { generateKey, decrypt, generateUUID, saltEncrypt } = require('../utils/commonFun');
 const Response = require('../utils/response');
+
+/**
+ * 保存生成的公钥/私钥
+ * 公钥-私钥
+ */
+const rsaKeyMap = new Map();
 
 /**
  * 用户登录
@@ -86,30 +93,58 @@ router.get('/getTmpCredential', (req, res, next) => {
 });
 
 /**
- * 根据uid与pwd获取用户信息
+ * 获取非对称加密的公钥
  */
-router.post('/findUser', (req, res, next) => {
-	const { uid, pwd } = req.body;
-	const sql = `SELECT * FROM user_info as uInfo where uInfo.UID = '${uid}' AND uInfo.Pwd = ${pwd}`;
-	execute(sql).then(resp => {
-		res.json(Response.success('', resp));
-	}, error => {
-		res.json(Response.error(error));
-	});
+router.get('/getPublicKey', (req, res, next) => {
+	generateKey().then(
+		({ publicKey, privateKey }) => {
+			rsaKeyMap.set(publicKey, privateKey);
+			res.json(Response.success('', publicKey));
+		},
+		(err) => {
+			console.log(err);
+			res.json(Response.error('获取公钥失败'));
+		}
+	);
 });
 
 /**
- * 注册用户
+ * 用户注册
  */
 router.post('/register', (req, res, next) => {
-	// 注册暂时先这样处理
-	const { uid, nickName, pwd } = req.body;
-	const sql = 'INSERT INTO user_info(UID, NickName, Pwd) VALUES(?, ?, ?)';
-	execute(sql, [uid, nickName, pwd]).then(resp => {
-		res.json(Response.success());
-	}, error => {
-		res.json(Response.error(error));
-	});
+	const { NickName, Password, Avatar, PublicKey } = req.body;
+	// 盐
+	const salt = generateUUID();
+	// 盐加密后的密码
+	const safePassword = saltEncrypt(salt, decrypt(rsaKeyMap.get(PublicKey), Password));
+	res.json(Response.success());
 });
+
+// /**
+//  * 根据uid与pwd获取用户信息
+//  */
+// router.post('/findUser', (req, res, next) => {
+// 	const { uid, pwd } = req.body;
+// 	const sql = `SELECT * FROM user_info as uInfo where uInfo.UID = '${uid}' AND uInfo.Pwd = ${pwd}`;
+// 	execute(sql).then(resp => {
+// 		res.json(Response.success('', resp));
+// 	}, error => {
+// 		res.json(Response.error(error));
+// 	});
+// });
+
+// /**
+//  * 注册用户
+//  */
+// router.post('/register', (req, res, next) => {
+// 	// 注册暂时先这样处理
+// 	const { uid, nickName, pwd } = req.body;
+// 	const sql = 'INSERT INTO user_info(UID, NickName, Pwd) VALUES(?, ?, ?)';
+// 	execute(sql, [uid, nickName, pwd]).then(resp => {
+// 		res.json(Response.success());
+// 	}, error => {
+// 		res.json(Response.error(error));
+// 	});
+// });
 
 module.exports = router;

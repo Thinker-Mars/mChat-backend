@@ -5,7 +5,8 @@ module.exports = {
 	},
 	globals: {
 		'module': true,
-		'Promise': true
+		'Promise': true,
+		'Map': true
 	},
 	parserOptions: {
 		'ecmaVersion': 6,
