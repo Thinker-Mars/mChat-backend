@@ -16,30 +16,37 @@ const rsaKeyMap = new Map();
  * 用户登录
  */
 router.post('/login', (req, res, next) => {
-	const { uid, password } = req.body;
-	const sql = `SELECT userinfo.Uid, constant.Value as Gender, userinfo.BirthDay,
-		userinfo.Avatar, userinfo.Home, userinfo.Motto, userinfo.NickName FROM userinfo
+	const { Uid, Password, PublicKey } = req.body;
+	const sql = `SELECT userinfo.Uid, userinfo.Password, constant.Value as Gender, userinfo.BirthDay,
+		userinfo.Avatar, userinfo.Home, userinfo.Motto, userinfo.NickName, userinfo.Salt FROM userinfo
 		LEFT JOIN constant ON userinfo.GenderConstant = constant.Id
-		WHERE Uid = '${uid}' AND Password = '${password}'`;
+		WHERE Uid = '${Uid}'`;
 	execute(sql).then((resp) => {
 		const length = Object.keys(resp).length;
 		if (length === 1) {
 			// 头像标识
-			const { Avatar } = resp[0];
-			// 获取头像地址
-			getObjectUrl(Avatar).then(
-				(url) => {
-					const userinfo = Object.assign(resp[0], { Avatar: url });
-					res.json(Response.success('', { userinfo }));
-				},
-				(err) => {
-					console.log(err);
-					const userinfo = Object.assign(resp[0], { Avatar: '' });
-					res.json(Response.success('', { userinfo }));
-				}
-			);
+			const { Avatar, Salt } = resp[0];
+			const calcPassword = saltEncrypt(Salt, decrypt(rsaKeyMap.get(PublicKey), Password));
+			if (calcPassword === resp[0].Password) {
+				delete resp[0].Password;
+				delete resp[0].Salt;
+				// 获取头像地址
+				getObjectUrl(Avatar).then(
+					(url) => {
+						const userinfo = Object.assign(resp[0], { Avatar: url });
+						res.json(Response.success('', { userinfo }));
+					},
+					(err) => {
+						console.log(err);
+						const userinfo = Object.assign(resp[0], { Avatar: '' });
+						res.json(Response.success('', { userinfo }));
+					}
+				);
+			} else {
+				res.json(Response.error('账号密码错误'));
+			}
 		} else {
-			res.json(Response.error('账号密码错误'));
+			res.json(Response.error('用户不存在'));
 		}
 	});
 });
@@ -117,34 +124,34 @@ router.post('/register', (req, res, next) => {
 	const salt = generateUUID();
 	// 盐加密后的密码
 	const safePassword = saltEncrypt(salt, decrypt(rsaKeyMap.get(PublicKey), Password));
-	res.json(Response.success());
+	const registerSql = 'INSERT INTO userinfo(`Password`, GenderConstant, Avatar, NickName, Salt) VALUES (?, ?, ?, ?, ?);';
+	execute(registerSql, [safePassword, '1', Avatar, NickName, salt]).then(
+		() => {
+			const findUidSql = `SELECT Uid FROM userinfo 
+			WHERE Avatar = '${Avatar}' AND Salt = '${salt}';`;
+			// 获取用户Uid
+			execute(findUidSql).then(
+				(findRes) => {
+					const userLength = Object.keys(findRes).length;
+					if (userLength === 1) {
+						rsaKeyMap.delete(PublicKey);
+						const { Uid } = findRes[0];
+						res.json(Response.success('', { Uid }));
+					} else {
+						res.json(Response.error('获取用户信息失败'));
+					}
+				},
+				(findErr) => {
+					console.log(findErr);
+					res.json(Response.error('获取用户信息失败'));
+				}
+			);
+		},
+		(regErr) => {
+			console.log(regErr);
+			res.json(Response.error('注册失败'));
+		}
+	);
 });
-
-// /**
-//  * 根据uid与pwd获取用户信息
-//  */
-// router.post('/findUser', (req, res, next) => {
-// 	const { uid, pwd } = req.body;
-// 	const sql = `SELECT * FROM user_info as uInfo where uInfo.UID = '${uid}' AND uInfo.Pwd = ${pwd}`;
-// 	execute(sql).then(resp => {
-// 		res.json(Response.success('', resp));
-// 	}, error => {
-// 		res.json(Response.error(error));
-// 	});
-// });
-
-// /**
-//  * 注册用户
-//  */
-// router.post('/register', (req, res, next) => {
-// 	// 注册暂时先这样处理
-// 	const { uid, nickName, pwd } = req.body;
-// 	const sql = 'INSERT INTO user_info(UID, NickName, Pwd) VALUES(?, ?, ?)';
-// 	execute(sql, [uid, nickName, pwd]).then(resp => {
-// 		res.json(Response.success());
-// 	}, error => {
-// 		res.json(Response.error(error));
-// 	});
-// });
 
 module.exports = router;
