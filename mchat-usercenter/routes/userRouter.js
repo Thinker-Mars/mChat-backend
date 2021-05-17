@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { execute } = require('../utils/mysqlUtil');
-const { getObjectUrl, batchGetObjectUrl, getCredential } = require('../utils/cosHelper');
+const { getObjectUrl, batchGetObjectUrl, getCredential, moveTempBacketObject } = require('../utils/cosHelper');
 const { generateKey, decrypt, generateUUID, saltEncrypt } = require('../utils/commonFun');
 const Response = require('../utils/response');
 
@@ -27,6 +27,7 @@ router.post('/login', (req, res, next) => {
 			// 头像标识
 			const { Avatar, Salt } = resp[0];
 			const calcPassword = saltEncrypt(Salt, decrypt(rsaKeyMap.get(PublicKey), Password));
+			rsaKeyMap.delete(PublicKey);
 			if (calcPassword === resp[0].Password) {
 				delete resp[0].Password;
 				delete resp[0].Salt;
@@ -46,6 +47,7 @@ router.post('/login', (req, res, next) => {
 				res.json(Response.error('账号密码错误'));
 			}
 		} else {
+			rsaKeyMap.delete(PublicKey);
 			res.json(Response.error('用户不存在'));
 		}
 	});
@@ -119,22 +121,29 @@ router.get('/getPublicKey', (req, res, next) => {
  * 用户注册
  */
 router.post('/register', (req, res, next) => {
-	const { NickName, Password, Avatar, PublicKey } = req.body;
+	const { NickName, Password, Gender, PublicKey } = req.body;
+	let { Avatar } = req.body;
+	if (!Avatar) {
+		// 如果没有上传图片就使用默认图片
+		Avatar = 'register-image/default.jpg';
+	}
+	// 图片被移动到正式桶中的key
+	const newAvatar = Avatar.substring(Avatar.indexOf('/') + 1);
 	// 盐
 	const salt = generateUUID();
 	// 盐加密后的密码
 	const safePassword = saltEncrypt(salt, decrypt(rsaKeyMap.get(PublicKey), Password));
 	const registerSql = 'INSERT INTO userinfo(`Password`, GenderConstant, Avatar, NickName, Salt) VALUES (?, ?, ?, ?, ?);';
-	execute(registerSql, [safePassword, '1', Avatar, NickName, salt]).then(
+	execute(registerSql, [safePassword, Gender, newAvatar, NickName, salt]).then(
 		() => {
+			rsaKeyMap.delete(PublicKey);
 			const findUidSql = `SELECT Uid FROM userinfo 
-			WHERE Avatar = '${Avatar}' AND Salt = '${salt}';`;
+			WHERE Avatar = '${newAvatar}' AND Salt = '${salt}';`;
 			// 获取用户Uid
 			execute(findUidSql).then(
 				(findRes) => {
 					const userLength = Object.keys(findRes).length;
 					if (userLength === 1) {
-						rsaKeyMap.delete(PublicKey);
 						const { Uid } = findRes[0];
 						res.json(Response.success('', { Uid }));
 					} else {
@@ -144,6 +153,13 @@ router.post('/register', (req, res, next) => {
 				(findErr) => {
 					console.log(findErr);
 					res.json(Response.error('获取用户信息失败'));
+				}
+			);
+			// 暂时异步处理
+			moveTempBacketObject(Avatar, newAvatar).then(
+				() => {},
+				(err) => {
+					console.log(err, '图片移动失败');
 				}
 			);
 		},

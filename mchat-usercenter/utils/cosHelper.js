@@ -88,7 +88,7 @@ function getCredential(folder) {
 			'name/cos:UploadPart',
 			'name/cos:CompleteMultipartUpload'
 		];
-		const uid = TmpBucket.substr(1 + TmpBucket.lastIndexOf('-'));
+		const uid = TmpBucket.substring(1 + TmpBucket.lastIndexOf('-'));
 		/**
 		 * 权限列表请看 https://cloud.tencent.com/document/product/436/31923
 		 */
@@ -120,6 +120,58 @@ function getCredential(folder) {
 	});
 }
 
+/**
+ * 将临时桶中的文件移动到正式桶
+ * @param {string} oldKey 临时对象在桶中的路径 格式如：register-image/default.jpg
+ * @param {string} newKey 对象在正式桶中的名称
+ */
+function moveTempBacketObject(oldKey, newKey) {
+	return new Promise((resolve, reject) => {
+		const cos = new COS({ SecretId, SecretKey });
+		const copySource = `${TmpBucket}.cos.${Region}.myqcloud.com/${encodeURIComponent(oldKey)}`;
+		cos.putObjectCopy(
+			{
+				Bucket,
+				Region,
+				Key: newKey,
+				CopySource: copySource
+			},
+			(err, data) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(data);
+				}
+			}
+		);
+	});
+}
+
+/**
+ * 删除临时桶中的对象
+ * @param {string} key 图片名称
+ */
+// function deleteTempBacketObject(key) {
+// 	return new Promise((resolve, reject) => {
+// 		const cos = new COS({ SecretId, SecretKey });
+// 		cos.deleteObject(
+// 			{
+// 				Bucket: TmpBucket,
+// 				Region: Region,
+// 				Key: key
+// 			},
+// 			(err, data) => {
+// 				if (err) {
+// 					reject(err);
+// 				} else {
+// 					resolve();
+// 				}
+// 			}
+// 		);
+// 	});
+// }
+
 module.exports.getObjectUrl = getObjectUrl;
 module.exports.batchGetObjectUrl = batchGetObjectUrl;
 module.exports.getCredential = getCredential;
+module.exports.moveTempBacketObject = moveTempBacketObject;
