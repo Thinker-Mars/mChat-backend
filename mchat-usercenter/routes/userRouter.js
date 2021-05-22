@@ -170,4 +170,48 @@ router.post('/register', (req, res, next) => {
 	);
 });
 
+/**
+ * 根据关键字查询用户
+ */
+router.get('/getUser', (req, res, next) => {
+	const { Uid, Keyword } = req.query;
+	// IsFriend为1表示：是好友，2表示：非好友
+	let findUserSql = '';
+	if (isNaN(Keyword)) {
+		// 不是数字，按照昵称去匹配
+		findUserSql = `SELECT Uid, Avatar, NickName, Motto, IF(Uid='${Uid}',1,2) AS IsFriend FROM
+		(SELECT Uid, Avatar, NickName, Motto FROM userinfo WHERE NickName LIKE BINARY '%${Keyword}%') matchUser`;
+	} else {
+		// 按照 UID匹配
+		findUserSql = `SELECT Uid, Avatar, NickName, Motto, IF(Uid='${Uid}',1,2) AS IsFriend FROM
+		(SELECT Uid, Avatar, NickName, Motto FROM userinfo WHERE Uid LIKE '%${Keyword}%') matchUser`;
+	}
+	execute(findUserSql).then(
+		(findRes) => {
+			if (Object.keys(findRes).length > 0) {
+				const avatars = [];
+				for (const user of findRes) {
+					const { Avatar } = user;
+					avatars.push(Avatar);
+				}
+				batchGetObjectUrl(avatars).then(
+					(imgRes) => {
+						for (const user of findRes) {
+							const { Avatar } = user;
+							user.Avatar = imgRes[Avatar];
+						}
+						res.json(Response.success('', { matchUser: findRes }));
+					}
+				);
+			} else {
+				res.json(Response.success('', { matchUser: [] }));
+			}
+		},
+		(findErr) => {
+			console.log(findErr, '关键字查询用户信息失败');
+			res.json(Response.error('查询失败'));
+		}
+	);
+});
+
 module.exports = router;

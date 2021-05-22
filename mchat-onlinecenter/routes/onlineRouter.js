@@ -53,6 +53,24 @@ router.io = function(io) {
 		});
 
 		/**
+		 * 监听 [好友申请] 事件
+		 */
+		socket.on('sendFriendApply', function(data) {
+			const { ProducerID, ConsumerID, NickName, Avatar, Greet } = data;
+			isUserOnline(ConsumerID).then(
+				(online) => {
+					if (online) {
+						console.log('在线');
+						io.to(ConsumerID).emit('receiveFriendApplyMsg', { ProducerID, NickName, Avatar, Greet });
+					} else {
+						console.log('不在线');
+					}
+				}
+			);
+			console.log(data, 'data');
+		});
+
+		/**
 		 * 退出系统（掉线、主动退出等）
 		 */
 		socket.on('disconnecting', () => {
