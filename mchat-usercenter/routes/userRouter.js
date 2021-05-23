@@ -58,9 +58,8 @@ router.post('/login', (req, res, next) => {
  */
 router.post('/getFriendList', (req, res, next) => {
 	const { uid } = req.body;
-	const sql = `SELECT Uid, NickName, friendnote.NoteName, constant.Value as Gender, Avatar, Home, Motto FROM userinfo
+	const sql = `SELECT Uid, NickName, constant.Value as Gender, Avatar, Home, Motto FROM userinfo
 		LEFT JOIN constant ON userinfo.GenderConstant = constant.Id
-		LEFT JOIN friendnote ON friendnote.UserId = '${uid}' AND userinfo.Uid = friendnote.FriendId
 		WHERE userinfo.Uid IN 
 	(SELECT FriendId FROM relation WHERE UserId = '${uid}' UNION ALL SELECT UserId FROM relation WHERE FriendId = '${uid}')`;
 	execute(sql).then((resp) => {
@@ -175,16 +174,23 @@ router.post('/register', (req, res, next) => {
  */
 router.get('/getUser', (req, res, next) => {
 	const { Uid, Keyword } = req.query;
-	// IsFriend为1表示：是好友，2表示：非好友
 	let findUserSql = '';
 	if (isNaN(Keyword)) {
 		// 不是数字，按照昵称去匹配
-		findUserSql = `SELECT Uid, Avatar, NickName, Motto, IF(Uid='${Uid}',1,2) AS IsFriend FROM
-		(SELECT Uid, Avatar, NickName, Motto FROM userinfo WHERE NickName LIKE BINARY '%${Keyword}%') matchUser`;
+		findUserSql = `SELECT userinfo.Uid, userinfo.NickName, userinfo.Avatar, userinfo.Motto FROM (
+			SELECT matchUser.Uid FROM
+			(SELECT Uid FROM userinfo WHERE NickName LIKE BINARY '%${Keyword}%') matchUser WHERE matchUser.Uid NOT IN 
+			(SELECT FriendId FROM relation WHERE UserId = '${Uid}' UNION ALL SELECT UserId FROM relation WHERE FriendId = '${Uid}')
+			) stranger 
+			LEFT JOIN userinfo ON stranger.Uid = userinfo.Uid;`;
 	} else {
 		// 按照 UID匹配
-		findUserSql = `SELECT Uid, Avatar, NickName, Motto, IF(Uid='${Uid}',1,2) AS IsFriend FROM
-		(SELECT Uid, Avatar, NickName, Motto FROM userinfo WHERE Uid LIKE '%${Keyword}%') matchUser`;
+		findUserSql = `SELECT userinfo.Uid, userinfo.NickName, userinfo.Avatar, userinfo.Motto FROM (
+			SELECT matchUser.Uid FROM
+			(SELECT Uid FROM userinfo WHERE Uid LIKE '%${Keyword}%') matchUser WHERE matchUser.Uid NOT IN 
+			(SELECT FriendId FROM relation WHERE UserId = '${Uid}' UNION ALL SELECT UserId FROM relation WHERE FriendId = '${Uid}')
+			) stranger 
+			LEFT JOIN userinfo ON stranger.Uid = userinfo.Uid;`;
 	}
 	execute(findUserSql).then(
 		(findRes) => {
@@ -210,6 +216,23 @@ router.get('/getUser', (req, res, next) => {
 		(findErr) => {
 			console.log(findErr, '关键字查询用户信息失败');
 			res.json(Response.error('查询失败'));
+		}
+	);
+});
+
+/**
+ * 新增朋友
+ */
+router.post('/addFriend', (req, res, next) => {
+	const { Uid, FriendUid } = req.body;
+	const addSql = 'INSERT INTO relation(UserId, FriendId) VALUES (?, ?);';
+	execute(addSql, [Uid, FriendUid]).then(
+		() => {
+			res.json(Response.success());
+		},
+		(addErr) => {
+			console.log(addErr, '更新好友关系失败');
+			res.json(Response.error('添加好友关系失败'));
 		}
 	);
 });

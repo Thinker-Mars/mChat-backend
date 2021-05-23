@@ -45,7 +45,7 @@ router.io = function(io) {
 		/**
 		 * 使用uid标识room，方便消息的发送
 		 */
-		socket.on('initUserRoom', function(data) {
+		socket.on('login', function(data) {
 			const { socketId, uid } = data;
 			socket.leave(socketId);
 			socket.join(uid);
@@ -54,20 +54,32 @@ router.io = function(io) {
 
 		/**
 		 * 监听 [好友申请] 事件
+		 * 此消息暂不接入「消息中心」
 		 */
 		socket.on('sendFriendApply', function(data) {
-			const { ProducerID, ConsumerID, NickName, Avatar, Greet } = data;
+			const { ProducerID, ConsumerID, NickName, Avatar, Greet, Gender, Motto } = data;
 			isUserOnline(ConsumerID).then(
 				(online) => {
 					if (online) {
-						console.log('在线');
-						io.to(ConsumerID).emit('receiveFriendApplyMsg', { ProducerID, NickName, Avatar, Greet });
-					} else {
-						console.log('不在线');
+						io.to(ConsumerID).emit('receiveFriendApplyMsg', { ProducerID, NickName, Avatar, Greet, Gender, Motto });
 					}
 				}
 			);
-			console.log(data, 'data');
+		});
+
+		/**
+		 * 监听 [好友确认] 事件
+		 * 此消息暂不接入「消息中心」
+		 */
+		socket.on('sendFriendConfirm', function(data) {
+			const { ProducerID, ConsumerID, NickName, Avatar, Gender, Motto } = data;
+			isUserOnline(ConsumerID).then(
+				(online) => {
+					if (online) {
+						io.to(ConsumerID).emit('receiveFriendConfirmMsg', { ProducerID, NickName, Avatar, Gender, Motto });
+					}
+				}
+			);
 		});
 
 		/**
