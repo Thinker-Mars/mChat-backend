@@ -182,7 +182,8 @@ router.get('/getUser', (req, res, next) => {
 			(SELECT Uid FROM userinfo WHERE NickName LIKE BINARY '%${Keyword}%') matchUser WHERE matchUser.Uid NOT IN 
 			(SELECT FriendId FROM relation WHERE UserId = '${Uid}' UNION ALL SELECT UserId FROM relation WHERE FriendId = '${Uid}')
 			) stranger 
-			LEFT JOIN userinfo ON stranger.Uid = userinfo.Uid;`;
+			LEFT JOIN userinfo ON stranger.Uid = userinfo.Uid 
+			AND userinfo.Uid != '${Uid}'`;
 	} else {
 		// 按照 UID匹配
 		findUserSql = `SELECT userinfo.Uid, userinfo.NickName, userinfo.Avatar, userinfo.Motto FROM (
@@ -190,11 +191,12 @@ router.get('/getUser', (req, res, next) => {
 			(SELECT Uid FROM userinfo WHERE Uid LIKE '%${Keyword}%') matchUser WHERE matchUser.Uid NOT IN 
 			(SELECT FriendId FROM relation WHERE UserId = '${Uid}' UNION ALL SELECT UserId FROM relation WHERE FriendId = '${Uid}')
 			) stranger 
-			LEFT JOIN userinfo ON stranger.Uid = userinfo.Uid;`;
+			LEFT JOIN userinfo ON stranger.Uid = userinfo.Uid
+			AND userinfo.Uid != '${Uid}';`;
 	}
 	execute(findUserSql).then(
 		(findRes) => {
-			if (Object.keys(findRes).length > 0) {
+			if (Object.keys(findRes).length > 0 && findRes[0].Uid) {
 				const avatars = [];
 				for (const user of findRes) {
 					const { Avatar } = user;
