@@ -8,12 +8,12 @@ const mysql = require('mysql');
  * 构造连接池配置对象
  */
 const poolConfig = {
-	// host: '172.20.48.88',
-	host: '127.0.0.1',
+	host: '172.20.48.88',
+	// host: '127.0.0.1',
 	port: 3306,
 	user: 'root',
-	// password: 'yingziairen1a2Z',
-	password: 'yingziairen',
+	password: 'yingziairen1a2Z',
+	// password: 'yingziairen',
 	database: 'mchat',
 	/**
 	 * 最大连接数，默认10

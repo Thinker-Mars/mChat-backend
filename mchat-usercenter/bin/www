@@ -49,7 +49,7 @@ server.on('listening', onListening);
 /**
  * register service
  */
-// registerService();
+registerService();
 
 /**
  * Event listener for HTTP server "error" event.
