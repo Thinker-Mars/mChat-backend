@@ -145,7 +145,7 @@ function addService() {
 		upstream: {
 			type: 'roundrobin',
 			key: 'apikey',
-			'hash_on ': 'header',
+			'hash_on': 'header',
 			nodes
 		},
 		'enable_websocket': true
