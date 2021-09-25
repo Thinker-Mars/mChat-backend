@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "844f78fa-34be-4643-ae36-60707ba64465",
+		"name": "mChat网关控制台",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "查看consumer",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"msgcenter\",\r\n    \"plugins\": {\r\n        \"key-auth\": {\r\n            \"key\": \"msgcenter\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://47.92.82.34:9080/apisix/admin/consumers?api_key=mchat",
+					"protocol": "http",
+					"host": [
+						"47",
+						"92",
+						"82",
+						"34"
+					],
+					"port": "9080",
+					"path": [
+						"apisix",
+						"admin",
+						"consumers"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "mchat"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "查看service",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"upstream\": {\r\n        \"nodes\": {\r\n            \"192.168.1.3:2000\": null\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://47.92.82.34:9080/apisix/admin/services/?api_key=mchat",
+					"protocol": "http",
+					"host": [
+						"47",
+						"92",
+						"82",
+						"34"
+					],
+					"port": "9080",
+					"path": [
+						"apisix",
+						"admin",
+						"services",
+						""
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "mchat"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "查看route",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://47.92.82.34:9080/apisix/admin/routes/?api_key=mchat",
+					"protocol": "http",
+					"host": [
+						"47",
+						"92",
+						"82",
+						"34"
+					],
+					"port": "9080",
+					"path": [
+						"apisix",
+						"admin",
+						"routes",
+						""
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "mchat"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取plugin列表",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://47.92.82.34:9080/apisix/admin/plugins/list?api_key=mchat",
+					"protocol": "http",
+					"host": [
+						"47",
+						"92",
+						"82",
+						"34"
+					],
+					"port": "9080",
+					"path": [
+						"apisix",
+						"admin",
+						"plugins",
+						"list"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "mchat"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
